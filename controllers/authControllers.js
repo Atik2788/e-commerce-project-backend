@@ -38,6 +38,12 @@ class authControllers{
         }
     }
     // End admin_login method
+
+
+
+    seller_register = async(req, res) =>{
+        const {email, name, password} = req.body;
+    }
     
 
 
