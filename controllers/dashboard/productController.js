@@ -28,10 +28,12 @@ class productController{
 
             try {
                 let allImageUrl = []
-                // clg 
+                // if images has one img then it is a obj, and loop dont work, then make it array, then it works
+                const images = Array.isArray(files.images) ? files.images : [files.images];
+
                 for (let i = 0; i < images.length; i++) {
                     const result = await cloudinary.uploader.upload(images[i].filepath, {folder: 'products'});
-                    console.log("url",result.url);
+                    // console.log("url",result.url);
                     allImageUrl = [...allImageUrl, result.url]
                 }
  
@@ -59,6 +61,37 @@ class productController{
           });
     }
     // end add_product method
+
+
+    products_get = async(req, res) =>{
+        console.log(req.query);
+        console.log(req.id);
+
+        const {page, searchValue, parPage} = req.query;
+        const {id} =  req;
+
+        skipPage = parseInt(parPage) * (parseInt(page) - 1)
+
+        try {
+            if (searchValue ) {
+                            const products = await productModel.find({
+                                $text: {$search: searchValue},
+                                sellerId: id
+                            }).skip(skipPage).limit(parPage).sort({createdAt: -1})
+            
+                            const totalProduct = await productModel.find({
+                                $text: {$search: searchValue},
+                                sellerId: id
+                            }).countDocuments()
+                            responseReturn(res, 200, {products, totalProduct})            
+                        }else{
+                            
+                        }
+        } catch (error) {
+            
+        }
+
+    }
 }
 
 
