@@ -69,8 +69,8 @@ class productController {
   // end add_product method
 
   products_get = async (req, res) => {
-    console.log(req.query);
-    console.log(req.id);
+    // console.log(req.query);
+    // console.log(req.id);
 
     const { page, searchValue, parPage } = req.query;
     const { id } = req;
@@ -107,10 +107,23 @@ class productController {
           .countDocuments();
         responseReturn(res, 200, { products, totalProduct });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error.message);
+    }
   };
-
     // end products_get method
+
+    products_get = async(req, res) =>{
+      const {productId} = req.params;
+      try {  
+        const product = await productModel.findById(productId)
+        responseReturn(res, 200, { product });
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+        // end products_get method
+
 
 
 }
