@@ -140,9 +140,20 @@ class productController {
             responseReturn(res, 200, {product, message: "Product Updated Successfully" });
           } catch (error) {
             responseReturn(res, 500, { error: error.messsage});
-          }
+          } 
         }
         // end update_product method
+
+
+        product_image_update = async(req, res) =>{
+          const form = formidable({multiples: true})
+
+          form.parse(req, (err, field, files) =>{
+            console.log(files);
+            console.log(field);
+          })
+        }
+        // end product_image_update method
 
 
 

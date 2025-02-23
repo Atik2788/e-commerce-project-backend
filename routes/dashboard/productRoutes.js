@@ -7,6 +7,7 @@ const router = require('express').Router()
  router.get('/products-get',authMiddleware, productController.products_get)
  router.get('/product-get/:productId',authMiddleware, productController.product_get)
  router.post('/product-update',authMiddleware, productController.update_product)
+ router.post('/product-image-update',authMiddleware, productController.product_image_update)
 
 
  module.exports = router 
