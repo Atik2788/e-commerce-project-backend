@@ -148,9 +148,44 @@ class productController {
         product_image_update = async(req, res) =>{
           const form = formidable({multiples: true})
 
-          form.parse(req, (err, field, files) =>{
-            console.log(files);
-            console.log(field);
+          form.parse(req, async (err, field, files) =>{
+            const {oldImage, productId} = field;
+            const {newImage} = files;
+
+            if(err){
+              responseReturn(res, 400, { error: error.messsage});
+            }
+            else{
+              try {
+                  // send img in cloudinary
+                  cloudinary.config({
+                    cloud_name: process.env.cloud_name,
+                    api_key: process.env.api_key,
+                    api_secret: process.env.api_secret,
+                    secure: true,
+                  });
+
+                  const result = await cloudinary.uploader.upload(newImage.filepath, {folder: 'products'})
+
+                  if(result){
+                      let {images} = await productModel.findById(productId);
+
+                      const index = images.findIndex(img => img === oldImage);
+                      images[index] = result.url;
+
+                      await productModel.findByIdAndUpdate(productId, {images})
+
+                      const product = await productModel.findById(productId);
+                      responseReturn(res, 200, {product, message: "Product Image Updated Successfully" });
+                  }else{
+                    responseReturn(res, 404, { error: "Image uplod failed"});
+                  }
+
+              } catch (error) {
+                console.log(' error');
+                responseReturn(res, 404, { error: error.message});
+              }
+            }
           })
         }
         // end product_image_update method
