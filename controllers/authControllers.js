@@ -2,7 +2,7 @@ const adminModel = require('../models/adminModel');
 const sellerModel = require('../models/sellerModel');
 const sellerCustomerModel = require('../models/chat/sellerCustomerModel');
 const { responseReturn } = require('../utiles/response');
-const bcrpty = require("bcrypt");
+const bcrypt = require("bcrypt");
 const { createToken } = require('../utiles/tokenCreate');
 const formidable = require("formidable");
 const cloudinary = require("cloudinary").v2;
@@ -18,7 +18,7 @@ class authControllers{
             // console.log(admin);
 
             if (admin) {
-                const match = await bcrpty.compare(password, admin.password)
+                const match = await bcrypt.compare(password, admin.password)
                 // console.log('match', match);
                 if (match) {
                     const token = await createToken({
@@ -28,7 +28,14 @@ class authControllers{
                     res.cookie('accessToken', token,{
                         expires: new Date(Date.now() + 7*24*60*60*1000)
                     })
-                    responseReturn(res, 200, {token, message: "Login Success!"})
+                    responseReturn(res, 200, {token, message: "Login Success!", 
+                        userInfo: {
+                            id: admin.id,
+                            name: admin.name,
+                            email: admin.email,
+                            role: admin.role
+                    }
+                })
                 }
                 else{
                     responseReturn(res, 404, {error: "Password not match"})
@@ -54,7 +61,7 @@ class authControllers{
             // console.log(seller);
 
             if (seller) {
-                const match = await bcrpty.compare(password, seller.password)
+                const match = await bcrypt.compare(password, seller.password)
                 // console.log('match', match);
                 if (match) {
                     const token = await createToken({
@@ -64,7 +71,14 @@ class authControllers{
                     res.cookie('accessToken', token,{
                         expires: new Date(Date.now() + 7*24*60*60*1000)
                     })
-                    responseReturn(res, 200, {token, message: "Login Success!"})
+                    responseReturn(res, 200, {token, message: "Login Success!",
+                        userInfo: {
+                            id: seller.id,
+                            name: seller.name,
+                            email: seller.email,
+                            role: seller.role
+                    }
+                })
                 }
                 else{
                     responseReturn(res, 404, {error: "Password not match"})
@@ -94,7 +108,7 @@ class authControllers{
                const seller = await sellerModel.create({
                 name,
                 email,
-                password: await bcrpty.hash(password, 10),
+                password: await bcrypt.hash(password, 10),
                 method: 'menualy',
                 shopInfo: {}
                }) 
