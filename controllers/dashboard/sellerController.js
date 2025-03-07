@@ -28,7 +28,7 @@ class sellerController{
 
     get_seller = async(req, res) =>{
         const {sellerId} = req.params;
-        // console.log(sellerId);
+        // console.log(sellerId); 
 
         try {
             const seller = await sellerModel.findById(sellerId)
@@ -38,6 +38,21 @@ class sellerController{
         }
     }
     //  ******* end get_seller method  ***********
+
+    
+    seller_status_update = async(req, res) =>{
+        const {sellerId, status} = req.body;
+        // console.log(sellerId, status); 
+
+        try {
+            await sellerModel.findByIdAndUpdate(sellerId,{status})
+            const seller = await sellerModel.findById(sellerId)
+            responseReturn(res, 200,{seller, message: 'Seller Status Updated Successfully!'})
+        } catch (error) {
+            responseReturn(res, 500,{error: error.message}) 
+        }
+    }
+    //  ******* end seller_status_update method  ***********
 
 
 }
